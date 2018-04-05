@@ -18,7 +18,7 @@ public class CreateExcel extends ExcelExportUtility<DataRow> {
         for (DataRow dataRow : dataList) {
             Row row = sh.createRow(rowNum);
             int columnIndex = 0;
-            for(String column: dataRow.getColumns()) {
+            for(String column: dataRow.columns) {
                 Cell cell_0 = row.createCell(columnIndex);
                 cell_0.setCellStyle(normalStyle);
                 cell_0.setCellValue(column);

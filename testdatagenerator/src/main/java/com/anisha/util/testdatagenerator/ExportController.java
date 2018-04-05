@@ -1,12 +1,5 @@
 package com.anisha.util.testdatagenerator;
 
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,8 +7,16 @@ import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class ExportController {
@@ -25,14 +26,35 @@ public class ExportController {
     @Autowired
     private XlsReader xlsReader;
 
-    @GetMapping(value = "/export")
+    @GetMapping(value = "/generate")
     public ModelAndView exportRevisionsToExcel(final ModelAndView modelAndView, final HttpServletResponse response) {
         try {
-            final List<DataRow> data = xlsReader.read("/Users/prashant/Downloads/test-input.xlsx"); //Generate Data Here
+        	//Read the Input XLS
+        	long startTime = System.currentTimeMillis();
+            final ExcelModel model = xlsReader.readExcelData("C:\\Users\\skmyne6m\\git\\ExportExcel\\testdatagenerator\\src\\main\\resources\\historypharmacyinput-masterAct.xlsx"); //Generate Data Here
+            long elapsedTime = (System.currentTimeMillis() - startTime)/1000;
+            System.out.println("Reading time : " + elapsedTime +"s");
+            System.out.println("Header : " + model.header);
+            System.out.println("Row Count : " + model.rows.size());
+            
+        	//Update the Data Model here
+             startTime = System.currentTimeMillis();
+             
+             DataGenerationUtil.updateDOB(model);
+             DataGenerationUtil.updateZip(model);
+             DataGenerationUtil.updateCorelationId(model);
+             DataGenerationUtil.updateMessgeId(model);
+             DataGenerationUtil.updateCustStreetLine1(model);
+             DataGenerationUtil.updateCustStreetLine2(model);
+             
+             elapsedTime = (System.currentTimeMillis() - startTime)/1000;
+             System.out.println("Update Data : " + elapsedTime +"s");
+             
+           
+            //Download Data Model
             final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_hh_mm_ss");
             final String excelFileName = "Revisions_" + formatter.format(LocalDateTime.now()) + ".xlsx";
-            final SXSSFWorkbook wb = createExcel.exportExcel(new String[]{"REVISION ID",
-                    "CREATION DATE"}, data);
+            final SXSSFWorkbook wb = createExcel.exportExcel(model.header, model.rows);
 
             final ByteArrayOutputStream outByteStream = new ByteArrayOutputStream();
             wb.write(outByteStream);
@@ -54,19 +76,22 @@ public class ExportController {
         return modelAndView;
     }
 
-    private List<DataRow> populate() {
+    //Use this to create initial random sheet
+    private ExcelModel populateRandomData(List<String> headers) {
         final List<DataRow> rows = new ArrayList<>();
-        final List<String> headers = Arrays.asList(
-                "fname", "lName", "mname", "dob", "addr", "ph", "src", "id"
-        );
-        final List<String> column = Arrays.asList(
-                "prashat", "talele", "iiiii", "1872-98-23", "10233 concord", "test", "src178", "36788378648"
-        );
-        rows.add(DataRow.builder().columns(headers).build());
+        
         for (int i = 0; i < 100000; i++) {
-            final DataRow row = DataRow.builder().columns(column).build();
+        	List<String> columns= new ArrayList<>();
+        	for(int j=0;j<headers.size();j++) {
+        		columns.add(DataGenerationUtil.getRandomAlpha(5));
+        	}      		
+            final DataRow row = new DataRow();
+            row.setColumns(columns);
             rows.add(row);
         }
-        return rows;
+        ExcelModel excelModel = new ExcelModel();
+        excelModel.setHeader(headers);
+        excelModel.setRows(rows);
+        return excelModel;
     }
 }

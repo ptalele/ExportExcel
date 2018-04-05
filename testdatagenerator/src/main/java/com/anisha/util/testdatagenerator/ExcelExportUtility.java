@@ -1,9 +1,13 @@
 package com.anisha.util.testdatagenerator;
 
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-
 import java.util.List;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 public abstract class ExcelExportUtility<E extends Object> {
     protected static final String EMPTY_VALUE = " ";
@@ -61,17 +65,19 @@ public abstract class ExcelExportUtility<E extends Object> {
     /**
      * @param columns
      */
-    private void fillHeader(final String[] columns) {
+    private void fillHeader(final List<String> header) {
+    	
         wb = new SXSSFWorkbook(100); // keep 100 rows in memory, exceeding rows will be flushed to disk
         sh = wb.createSheet("Validated Data");
         final CellStyle headerStle = getHeaderStyle();
         for (int rownum = 0; rownum < 1; rownum++) {
             final Row row = sh.createRow(rownum);
-            for (int cellnum = 0; cellnum < columns.length; cellnum++) {
-                final Cell cell = row.createCell(cellnum);
-                cell.setCellValue(columns[cellnum]);
-                cell.setCellStyle(headerStle);
+            for (int cellnum = 0; cellnum < header.size(); cellnum++) {
+            	 final Cell cell = row.createCell(cellnum);
+            	 cell.setCellValue(header.get(cellnum));
+                 cell.setCellStyle(headerStle);
             }
+           
         }
     }
 
@@ -80,8 +86,8 @@ public abstract class ExcelExportUtility<E extends Object> {
      * @param dataList
      * @return
      */
-    public final SXSSFWorkbook exportExcel(final String[] columns, final List<E> dataList) {
-        fillHeader(columns);
+    public final SXSSFWorkbook exportExcel(final List<String> headers, final List<E> dataList) {
+        fillHeader(headers);
         fillData(dataList);
         // autoResizeColumns(columns.length);
         return wb;

@@ -4,31 +4,39 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.assertj.core.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import lombok.Data;
-
-@Controller
+@RestController
 public class ExportController {
 
     @Autowired
     private CreateExcel createExcel;
     @Autowired
     private XlsReader xlsReader;
+    
+    @GetMapping("/generate")
+    public List<String> mappings(){
+    	return new ArrayList(Arrays.asList(new String[]{
+    	 		 "/generate/fn",
+    	 		 "/generate/ln",
+    	 		 "/generate/mn",
+    	 		 "/generate/dob",
+    	 		 "/generate/zip",
+    	 		 "/generate/email",
+    	 		 "/generate/master"}));
+    }
 
     @GetMapping(value = "/generate/{field}")
     public ModelAndView exportRevisionsToExcel(final ModelAndView modelAndView, @PathVariable String field, final HttpServletResponse response) {

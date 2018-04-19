@@ -37,7 +37,7 @@ public class DataGenerationUtil {
 		List<String> header = model.header;
 		System.out.println("SrcId Position : " + header.indexOf("SrcId"));
 		System.out.println(model.rows.get(0).columns);
-		model.rows.stream().forEach(row -> row.columns.set(header.indexOf("SrcId"), getRandomNumber(14)));
+		model.rows.stream().forEach(row -> row.columns.set(header.indexOf("SrcId"), "RBH_"+getRandomNumber(14)));
 	}
 
 	public static void updateProgramId(ExcelModel model) {

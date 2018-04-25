@@ -34,7 +34,7 @@ public class XlsReader {
 				for(int i=0; i<headers.size(); i++) {
 					Cell c = r.getCell(i);
 					if(c==null) {
-						columns.add("TBD");
+						columns.add("");
 					}else {
 						columns.add(c.getStringCellValue());
 					}

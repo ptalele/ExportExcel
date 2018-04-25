@@ -81,7 +81,17 @@ public class DataGenerationUtil {
 		model.rows.stream().forEach(row -> row.columns.set(header.indexOf("WPhNumber"), getRandomNumber(7)));			
 		
 	}
-
+	public static void updateCellPhone(ExcelModel model) {
+		List<String> header = model.header;
+		System.out.println("CPhArea Position : " + header.indexOf("CPhArea"));
+		System.out.println(model.rows.get(0).columns);
+		model.rows.stream().forEach(row -> row.columns.set(header.indexOf("CPhArea"), getRandomNumber(3)));	
+		
+		System.out.println("CPhNumber Position : " + header.indexOf("CPhNumber"));
+		System.out.println(model.rows.get(0).columns);
+		model.rows.stream().forEach(row -> row.columns.set(header.indexOf("CPhNumber"), getRandomNumber(7)));			
+		
+	}
 	public static void updateHomePhone(ExcelModel model) {
 		List<String> header = model.header;
 		System.out.println("HPhArea Position : " + header.indexOf("HPhArea"));
